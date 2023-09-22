@@ -22,6 +22,16 @@ const getOne = async (req, res) => {
   }
 };
 
+const getTotalSales = async (req, res) => {
+  try {
+    const order = await Order.getTotalSales();
+    return res.send(order);
+  } catch (error) {
+    return res.status(500).send(error);
+  }
+};
+
+
 const create = async (req, res) => {
   try {
     const order = await Order.create(req.body);
@@ -70,6 +80,7 @@ const getByStatus = async (req, res) => {
 module.exports = {
   getAll,
   getOne,
+  getTotalSales,
   create,
   update,
   remove,

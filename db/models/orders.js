@@ -57,6 +57,36 @@ const getAll = async () => {
   return orders;
 };
 
+const getTotalSales = async () => {
+  const totalSales = await Order.aggregate([
+    {
+      $unwind: "$items"
+    },
+    {
+      $lookup: {
+        from: "menuitems",
+        localField: "items.item",
+        foreignField: "_id",
+        as: "menuItem"
+      }
+    },
+    {
+      $unwind: "$menuItem"
+    },
+    {
+      $group: {
+        _id: null,
+        total: {
+          $sum: {
+            $multiply: ["$items.quantity", "$menuItem.price"]
+          }
+        }
+      }
+    }
+  ]);
+  return totalSales[0]
+}
+
 const getOne = async (id) => {
   const order = await Order.findById(id).populate("items.item");
   return order;
@@ -85,6 +115,7 @@ const getByStatus = async (status) => {
 module.exports = {
   getAll,
   getOne,
+  getTotalSales,
   create,
   update,
   remove,
